@@ -77,13 +77,13 @@
 								
 								justA =currentGraph.raphael.path(curve_inner_circle2 + "A " + radii1.join(" ") + " 0 1 1 " + scale_and_join(inter1) +"M" + scale_and_join(inter1) +" Z").attr({fill:GREEN, "stroke-width":4, "fill-opacity":0 });
 								
-								jQuery(intersection.node).bind("mousedown touchstart",function() {
+								jQuery(intersection.node).bind("vmousedown",function() {
 									intersection.attr({'fill-opacity': intersection.attr('fill-opacity') === 1 ? 0 : 1})
 								})
-								jQuery(justA.node).bind("mousedown touchstart",function() {
+								jQuery(justA.node).bind("vmousedown",function() {
 									justA.attr({'fill-opacity': justA.attr('fill-opacity') === 1 ? 0 : 1})
 								})
-								jQuery(justB.node).bind("mousedown touchstart",function() {
+								jQuery(justB.node).bind("vmousedown",function() {
 									justB.attr({'fill-opacity': justB.attr('fill-opacity') === 1 ? 0 : 1})
 								})
 
