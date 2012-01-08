@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html data-require="math graphie jquery.mobile.vmouse">
+    <head>
+		<title>Venn Diagrams 0.5</title>
+		<script src="../khan-exercise.js"></script>
+	</head>
+	<body>
+		<div class="exercise">
+			<div class="vars">
+				<!-- Your variables in here... -->
+				<var ID="radius1">8</var>
+				<var ID="radius2">8</var>
+				<var ID="center1">[-10,0]</var>
+				<var ID="center2">[0,0]</var>
+				<!-- need intersections of the circles -->
+				<var ID="inter1">[-5,sqrt(39)]</var>
+				<var ID="inter2">[-5,-sqrt(39)]</var>
+				
+				
+			</div>
+
+			<div class="problems">
+				<div id="problem-type-or-description">
+						
+						<p class="problem">
+
+							<div class="graphie" id="Venn_Diagram">
+								init({
+									range: [ [ -24, 15 ], [ -10, 18 ] ],
+									scale: [ 15, 15 ] 
+								});
+								
+								style({
+									stroke: "Black",
+									strokeWidth: 5, // px; "2px" works too
+								});
+
+								// Left Circle
+								circle( center1, radius1, {
+									stroke: "Black",
+									strokeWidth: 5,
+								});
+								label( [-12,9],"\\huge{A}", "left");
+								// Right Circle
+								circle( center2, radius2, {
+									stroke: "Black",
+									strokeWidth: 5,
+								});
+								label( [2, 9],"\\huge{B}", "right" );
+								
+								var scale_and_join= function(x)
+									{
+										var temp=scalePoint(x);
+										return temp.join(" ")
+									}	;
+									
+								var arc_string =
+									function(start,end,radius,largeAngle,sweep){
+										var radii=scaleVector(radius);
+						
+										var retstring="M" + scale_and_join(start) + "A" + radii.join(" ") + " 0 " + ( largeAngle ? 1 : 0 ) + " " +(sweep?1:0) + " " + scale_and_join(end)  ;
+										
+										return retstring;
+										};
+								
+								var	curve_inner_circle1=arc_string(inter1,inter2,radius1,0,1);
+								var curve_inner_circle2=arc_string(inter1,inter2,radius2,0,0);
+								var curve_outer_circle1=arc_string(inter1,inter2,radius1,1,1);
+								var curve_outer_circle2=arc_string(inter1,inter2,radius2,1,0);
+								
+								
+								window.test=intersection= currentGraph.raphael.path(curve_inner_circle1 +curve_inner_circle2 + "M" + scale_and_join(inter1) +" Z" ).attr({ fill: ORANGE, "stroke-width":4, "fill-opacity":0	});
+								
+								var radii1=scaleVector(radius1);
+								
+								justB =currentGraph.raphael.path(curve_inner_circle1 + "A " + radii1.join(" ") + " 0 1 0 " + scale_and_join(inter1) +"M" + scale_and_join(inter1) +" Z").attr({fill:BLUE, "stroke-width":4, "fill-opacity":0 });
+								
+								justA =currentGraph.raphael.path(curve_inner_circle2 + "A " + radii1.join(" ") + " 0 1 1 " + scale_and_join(inter1) +"M" + scale_and_join(inter1) +" Z").attr({fill:GREEN, "stroke-width":4, "fill-opacity":0 });
+								
+								jQuery(intersection.node).bind("mousedown touchstart",function() {
+									intersection.attr({'fill-opacity': intersection.attr('fill-opacity') === 1 ? 0 : 1})
+								})
+								jQuery(justA.node).bind("mousedown touchstart",function() {
+									justA.attr({'fill-opacity': justA.attr('fill-opacity') === 1 ? 0 : 1})
+								})
+								jQuery(justB.node).bind("mousedown touchstart",function() {
+									justB.attr({'fill-opacity': justB.attr('fill-opacity') === 1 ? 0 : 1})
+								})
+
+							</div>
+						<!-- An overview of the problem including all needed info. -->
+						</p>
+						<p class="question"><!-- The question to ask the student. --></p>
+							<div class="instruction">
+								Click on the areas in the Venn Diagram to shade the matching regions.
+							</div>
+						<div class="solution" data-type="custom">
+							
+							<div class="guess">digitsToInteger([
+								
+							</div>
+							<div class="validator-function">
+								
+							</div>
+							<div class="show-guess">
+							</div>
+						</div>
+						<div class="example">click a region to select it</div>
+						<div class="example">click a region again to deselect it</div>
+					<p class="solution"><!-- The correct answer expected of the student. --></p>
+                </div>
+            </div>
+
+			<div class="hints">
+				<!-- Any hints to show to the student. -->
+			</div>
+		</div>
+	</body>
+</html>
