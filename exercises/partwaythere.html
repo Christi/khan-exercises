@@ -7,26 +7,28 @@
 	<body>
 		<div class="exercise">
 			<div class="vars">
-				<!-- Your variables in here... -->
-				<var ID="radius1">8</var>
-				<var ID="radius2">8</var>
-				<var ID="center1">[-10,0]</var>
-				<var ID="center2">[0,0]</var>
-				<!-- need intersections of the circles -->
-				<var ID="inter1">[-5,sqrt(39)]</var>
-				<var ID="inter2">[-5,-sqrt(39)]</var>
-				
-				
+				<var id="radius1"> 8 </var>
+				<var id="radius2"> 8 </var>
+				<var id="center1"> [ -10 , 0 ] </var>
+				<var id="center2"> [ 0 , 0 ] </var>
+				<var id="inter1"> [ -5 , sqrt(39) ]</var>
+				<var id="inter2"> [ -5 , -sqrt(39) ]</var>
+				<var id="shaded"> randRange(1,7) </var>
+				<var id="Regions"> ["B \\cap \\lnot A", "A \\cap B", "B", "A \\cap \\lnot B", "\\lnot A \\cup \\lnot B", "A", "A \\cup B"]</var>
+				<var id="ShadedText">Regions[shaded-1]</var>
+				<var id="shadedBinary">shaded.toString(2)</var>
 			</div>
 
 			<div class="problems">
-				<div id="problem-type-or-description">
+				<div id="shade-the-diagram">
 						
-						<p class="problem">
-
+						<div class="problem">
+							<p class="question">
+								Shade the Venn Diagram to match <code><var>ShadedText</var></code>.
+							</p>
 							<div class="graphie" id="Venn_Diagram">
 								init({
-									range: [ [ -24, 15 ], [ -10, 18 ] ],
+									range: [ [ -20, 15 ], [ -10, 10 ] ],
 									scale: [ 15, 15 ] 
 								});
 								
@@ -69,7 +71,7 @@
 								var curve_outer_circle2=arc_string(inter1,inter2,radius2,1,0);
 								
 								
-								window.test=intersection= currentGraph.raphael.path(curve_inner_circle1 +curve_inner_circle2 + "M" + scale_and_join(inter1) +" Z" ).attr({ fill: ORANGE, "stroke-width":4, "fill-opacity":0	});
+								intersection= currentGraph.raphael.path(curve_inner_circle1 +curve_inner_circle2 + "M" + scale_and_join(inter1) +" Z" ).attr({ fill: ORANGE, "stroke-width":4, "fill-opacity":0	});
 								
 								var radii1=scaleVector(radius1);
 								
@@ -89,31 +91,46 @@
 
 							</div>
 						<!-- An overview of the problem including all needed info. -->
-						</p>
-						<p class="question"><!-- The question to ask the student. --></p>
+						</div>
+
+							
+						<div class="solution" data-type="custom">
 							<div class="instruction">
 								Click on the areas in the Venn Diagram to shade the matching regions.
 							</div>
-						<div class="solution" data-type="custom">
-							
-							<div class="guess">digitsToInteger([
-								
+							<div class="guess"> (digitsToInteger([parseInt(jQuery(justA.node).attr('fill-opacity')),parseInt(jQuery(intersection.node).attr('fill-opacity')),parseInt(jQuery(justB.node).attr('fill-opacity'))]))
 							</div>
 							<div class="validator-function">
-								
+								if ( guess === 0 ) {
+									return "";
+								} else {
+									return guess === parseInt(shadedBinary);
+								}
 							</div>
 							<div class="show-guess">
+								var area=digits(guess);
+																
+								//unselect all
+								jQuery(justA.node).attr('fill-opacity':0);
+								jQuery(justB.node).attr('fill-opacity':0);
+								jQuery(intersection).node.attr('fill-opacity':0);
+								
+								//select shaded regions
+								jQuery(justA.node).attr('fill-opacity':area[0]);
+								jQuery(intersection.node).attr('fill-opacity':area[1]);
+								jQuery(justB.node).attr('fill-opacity':area[2]);
 							</div>
+							<div class="example">click a region to select it</div>
+							<div class="example">click a region again to deselect it</div>
 						</div>
-						<div class="example">click a region to select it</div>
-						<div class="example">click a region again to deselect it</div>
-					<p class="solution"><!-- The correct answer expected of the student. --></p>
-                </div>
+						
+						<div class="hints">
+							<!-- Any hints to show to the student. -->
+						</div>
+				</div>
             </div>
 
-			<div class="hints">
-				<!-- Any hints to show to the student. -->
-			</div>
+			
 		</div>
 	</body>
 </html>
