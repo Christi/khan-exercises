@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html data-require="math graphie jquery.mobile.vmouse interactive">
+    <head>
+		<meta charset="UTF-8" />
+		<title>Venn Diagrams 1</title>
+		<script src="../khan-exercise.js"></script>
+		<script>
+			var toBinaryArray = function (integer) {
+				var newarray = [integer%8>>2, integer%4>>1, integer%2];
+				return newarray;
+			};
+			var regionValue = function (area, value) {
+				var areaArray = toBinaryArray(area);
+				return ( areaArray[0]*value[0] +
+					areaArray[1]*value[1] +
+					areaArray[2]*value[2]);
+			};
+		</script>
+	</head>
+	<body>
+		<div class="exercise">
+			<!-- give student numbers for A and B, student finds value of goal
+			// give student word problem, student finds value of goal
+			-->
+			<div class="vars">
+				<!-- variables for graphie -->
+				<var id="radius1"> 8 </var>
+				<var id="radius2"> 8 </var>
+				<var id="center1"> [ -10 , 0 ] </var>
+				<var id="center2"> [ 0 , 0 ] </var>
+				<var id="inter1"> [ -5 , sqrt(39) ] </var>
+				<var id="inter2"> [ -5 , -sqrt(39) ] </var>
+				<!-- percentages for problem setup - ensure total is less than 100% -->
+				<var id="percentages" data-ensure="percentages[0] + percentages[2] - percentages[1] &lt; 100">randRangeUnique(10, 99, 3)</var>
+				<!-- list of the possible regions both in logical notation and in words -->
+				<var id="Regions"> [ "B \\cap \\lnot A" , "A \\cap B" , "B" , "A \\cap \\lnot B" ,  "\\lnot (A \\cap B)" , "A" , "A \\cup B" ] </var>
+				<var id="RegionsInWords">[ "\\text {B but not A}" , "\\text{A and B}" , "\\text{B}" , "\\text{A but not B}" , "\\text{A or B but not both}" , "\\text{A}" , "\\text{A or B}"]</var>
+			</div>
+
+			<div class="problems">
+				<p>Use the Venn Diagram to answer the question below:</p>
+				<div class="graphie" id="Venn_Diagram"> <!--//add in code for labels -->
+					init({
+						range: [ [ -20, 15 ], [ -10, 10 ] ],
+						scale: [ 15, 15 ]
+					});
+
+					style({
+						stroke: "Black",
+						strokeWidth: 5, 
+					});
+
+					// Left Circle
+					circle( center1, radius1, {
+						stroke: "Black",
+						strokeWidth: 5,
+					});
+					label( [-12 , 9],"\\huge{A}", "left");
+					// Right Circle
+					circle( center2, radius2, {
+						stroke: "Black",
+						strokeWidth: 5,
+					});
+					label( [2, 9],"\\huge{B}", "right" );
+
+					var scale_and_join= function(x)
+						{
+							var temp=scalePoint(x);
+							return temp.join(" ")
+						};
+
+					var arc_string =
+						function(start, end, radius, largeAngle, sweep){
+							var radii=scaleVector(radius);
+
+							var retstring="M" + scale_and_join(start) + "A" + radii.join(" ") + " 0 " + ( largeAngle ? 1 : 0 ) + " " +( sweep ? 1 : 0 ) + " " + scale_and_join(end)  ;
+
+							return retstring;
+						};
+
+					var	curve_inner_circle1=arc_string(inter1, inter2, radius1, 0, 1);
+					var curve_inner_circle2=arc_string(inter1, inter2, radius2, 0, 0);
+					var curve_outer_circle1=arc_string(inter1, inter2, radius1, 1, 1);
+					var curve_outer_circle2=arc_string(inter1, inter2, radius2, 1, 0);
+
+
+					graph.intersection= raphael.path(curve_inner_circle1 + curve_inner_circle2 + "M" + scale_and_join(inter1) +" Z" ).attr({ fill: ORANGE, "stroke-width" : 4, "fill-opacity" : 0 });
+
+					var radii1=scaleVector(radius1);
+
+					graph.justB =raphael.path(curve_inner_circle1 + "A " + radii1.join(" ") + " 0 1 0 " + scale_and_join(inter1) +"M" + scale_and_join(inter1) +" Z").attr({ fill : BLUE, "stroke-width" : 4, "fill-opacity" : 0 });
+
+					graph.justA =raphael.path(curve_inner_circle2 + "A " + radii1.join(" ") + " 0 1 1 " + scale_and_join(inter1) +"M" + scale_and_join(inter1) +" Z").attr({ fill : GREEN, "stroke-width" : 4, "fill-opacity" : 0 });
+
+				</div>
+				<div class="trivial">
+					<div class="var"> <!--//add in code for labels-->
+						<var id="given" data-ensure="given[0] & given[1] ===0 || given[0] & given[1] === Math.min(given[0],given[1])"> randRangeUnique(1,7, 2)</var>
+						<var id="universe">randRange(1,50)</var>
+						<var id="baseNumbers">[percentages[0]*universe, percentages[1]*universe, percentages[2]*universe]</var>
+						<var id="given1Binary">toBinaryArray(given[0])</var>
+						<var id="given1Value">regionValue(given[0], universe)</var>
+						<var id="given2Binary">toBinaryArray(given[1])</var>
+						<var id="given2Value">regionValue(given[1],universe)</var>
+						<var id="lookingFor" data-if="given[0] & given[1] === 0">
+							(function(){
+							if (){
+								return (given[0]+given[1]);
+							} else {
+								return (Math.max(given[0], given[1]))
+							}})();
+						</var>
+					</div>	
+					<p class="problem"><!-- An overview of the problem including all needed info. -->
+						The number of items in <code><var>RegionInWords(given[0])</var></code> is <var>given1Value</var> and the number of items in <code><var>RegionInWords(given[1])</var></code> is <var>given2Value</var>.
+					</p>
+					<p class="question">How many items are in <code><var>RegionInWords(lookingFor)</var></code>?</p>
+					<p class="solution">regionValue(lookingFor, universe)</p>
+					<div class="hints"> <!--//add in code for shading!!-->
+						<p>
+							We are given that <code><var>RegionInWords(given[0])</var></code> has <var>given1Value</var> items and <code><var>RegionInWords(given[1])</var></code> has <var>given2Value</var> items. 
+						</p>
+						<p> <!--//fix so can work for add and subtract or move -->
+							Together <code><var>RegionInWords(given[0])</var></code> and <code><var>RegionInWords(given[1])</var></code> make up <code><var>RegionInWords(lookingFor)</var></code>.
+						</p>
+						<div data-if="given[0] & given[1] === 0">
+								
+							<p>
+								So to get the number of items in <var>RegionInWords(lookingFor)</var> we just need to add the number of items in <code><var>RegionInWords(given[0])</var></code> and in <code><var>RegionInWords(given[1])</var></code>
+							</p>
+							<p>
+								<code><var>regionValue(lookingFor, universe)</var>=<var>given1Value</var> + <var>given2Value</var></code>
+							</p>
+						</div>
+						<div data-else>
+							<p>
+								So to get the number of items in <code><var>RegionInWords</var></code> we just need to subtract the number of items in <code><var>RegionInWords(Math.min(given[0],given[1]))</var></code> from the number of items in <code><var>RegionInWords(Math.max(given[1],given[0]))</var></code>.
+							</p>
+							<p>
+								<code><var>regionValue(lookingFor, universe)</var>=<var>Math.max(given1Value,given2Value)</var> - <var>Math.min(given1Value,given2Value)</var></code>
+							</p>
+						</div>
+						<p>
+							So <code><var>RegionInWords(lookingFor)</var> = <em><var>regionValue(lookingFor, universe)</var></em></code>.
+						</p>
+					</div>
+				</div>
+            </div>
+		</div>
+	</body>
+</html>
