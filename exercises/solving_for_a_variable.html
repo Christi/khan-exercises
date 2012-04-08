@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html data-require="math math-format">
+<!--<html data-require="math math-format ast math-model simplify">-->
+<html data-require="math math-format ast math-model factoring-expressions expr-helpers expr-normal-form simplify steps-helpers subhints"">
+
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<title>Solving for a variable</title>
@@ -8,13 +10,14 @@
 		function color_( str, blue ) {
 			var pre = "";
 
-			if ( typeof str === "number" && str < 0 ) {
-				pre = "-";
-				str = Math.abs( str );
-			} else if ( typeof str === "string" && str.indexOf( "-" ) === 0 ) {
-				pre = "-";
-				str = str.slice( 1 );
-			}
+			//if ( typeof str === "number" && str < 0 ) {
+			//	pre = "-";
+			//	str = Math.abs( str );
+			//} 
+			//else if ( typeof str === "string" && str.indexOf( "-" ) === 0 ) {
+			//	pre = "-";
+			//	str = str.slice( 1 );
+			//}
 
 			return pre + "\\color{" + ( blue ? KhanUtil.BLUE : KhanUtil.ORANGE ) + "}{" + str + "}";
 		}
@@ -23,6 +26,8 @@
 <body>
 	<div class="exercise">
 		<div class="vars">
+		
+			<var id="MATH">MathModel.init()</var>
 
 			<var id="LETTERS">"abcdefghijklmnpqrstuvwxyz"</var>
 			<var id="LETTER">randRange( 0, LETTERS.length - 3 )</var>
@@ -294,7 +299,7 @@
 					<div data-if="C === F || C === -F" data-unwrap>
 
 						<div>
-							<p>Notice that the left- and right- denominators are <span data-if="C === F">the same</span><span data-else>opposite</span>.</p>
+							<p>Notice that the denominators on the left and right are <span data-if="C === F">the same</span><span data-else>opposite</span>.</p>
 							<p><code>\dfrac{ <var>plus( A+X, B+Y )</var> }{ <var>color_( C, true )</var> } = \dfrac{ <var>plus( D+X, E+Z )</var> }{ <var>color_( F, true )</var> }</code></p>
 						</div>
 
@@ -305,7 +310,7 @@
 
 						<p><code><var>plus( A+X, B+Y )</var> =
 							<span data-if="C === F"><var>plus( D+X, E+Z )</var></span>
-							<span data-else><var>color_( "-", true )</var> \cdot \left( <var>plus( D+X, E+Z )</var> \right)</span>
+							<span data-else><var>color_( "-", true )</var> \left( <var>plus( D+X, E+Z )</var> \right)</span>
 						</code></p>
 
 						<div data-if="C === -F" data-unwrap>
@@ -320,12 +325,13 @@
 					<div data-else data-unwrap>
 
 						<div>
-							<p>Multiply both sides by the left denominator.</p>
-							<p><code>\dfrac{ <var>plus( A+X, B+Y )</var> }{ <var>color_( C, true )</var> } = \dfrac{ <var>plus( D+X, E+Z )</var> }{ <var>F</var> }</code></p>
+							<p>Multiply both sides by the denominator on the left.</p>
+							<p><code>\qquad<var>MATH.format(simplify(MATH.parse("\\dfrac{ " + A + X + " + " + B + Y + "}{ #{" + C + "} }  = \\dfrac{" + D +  X + " + " + E + Z + "}{" + F + "} ", [BLUE])), simplifyOptions.checkInput)</var></code></p>
+							<p><code>\qquad<var>MATH.format(simplify(MATH.parse("#{" + C + "}" + "( \\dfrac{ " + A + X + " + " + B + Y + "}{ #{" + C + "}) }  = #{" + C + "}" + "( \\dfrac{" + D +  X + " + " + E + Z + "}{" + F + "} )", [BLUE, BLUE, BLUE])), simplifyOptions.minimal)</var></code></p>
+							
+							<p><code><var>color_( C, true )</var> \cdot \dfrac{ <var>plus( A+X, B+Y )</var> }{ <var>color_( C, true )</var> } = <var>color_( C, true )</var> \cdot \dfrac{ <var>plus( D+X, E+Z )</var> }{ <var>F</var> }</code></p>
+							<p><code><var>plus( A+X, B+Y )</var> = <var>color_( C, true )</var> \cdot \dfrac { <var>plus( D+X, E+Z )</var> }{ <var>F</var> }</code></p>
 						</div>
-						<p><code><var>color_( C, true )</var> \cdot \dfrac{ <var>plus( A+X, B+Y )</var> }{ <var>color_( C, true )</var> } = <var>color_( C, true )</var> \cdot \dfrac{ <var>plus( D+X, E+Z )</var> }{ <var>F</var> }</code></p>
-						<p><code><var>plus( A+X, B+Y )</var> = <var>color_( C, true )</var> \cdot \dfrac { <var>plus( D+X, E+Z )</var> }{ <var>F</var> }</code></p>
-
 						<div data-if="C % F === 0" data-unwrap>
 							<div>
 								<p>Reduce the right side.</p>
@@ -334,7 +340,7 @@
 							<p><code><var>plus( A+X, B+Y )</var> = <var>color_( C / F, false )</var> \cdot \left( <var>plus( D+X, E+Z )</var> \right)</code></p>
 						</div><div data-else>
 							<div>
-								<p>Multiply both sides by the right denominator.</p>
+								<p>Multiply both sides by the denominator on the right.</p>
 								<p><code><var>plus( A+X, B+Y )</var> = <var>C</var> \cdot \dfrac{ <var>plus( D+X, E+Z )</var> }{ <var>color_( F, false )</var> }</code></p>
 							</div>
 							<p><code><var>color_( F, false )</var> \cdot \left( <var>plus( A+X, B+Y )</var> \right) = <var>color_( F, false )</var> \cdot <var>C</var> \cdot \dfrac{ <var>plus( D+X, E+Z )</var> }{ <var>color_( F, false )</var> }</code></p>
@@ -342,13 +348,12 @@
 						</div>
 
 						<div>
-							<p>Distribute <span data-if="C % F === 0">the right side</span><span data-else>both sides</span>.</p>
+							<p>Distribute on <span data-if="C % F === 0">the right side</span><span data-else>both sides</span>.</p>
 							<p data-if="C % F === 0"><code><var>plus( A+X, B+Y )</var> = <var>color_( C / F, true )</var> \cdot \left( <var>plus( color_( D+X, true ), color_( E+Z, true ) )</var> \right)</code></p>
 							<p data-else><code><var>color_( F, true )</var> \cdot \left( <var>plus( A+X, B+Y )</var> \right) = <var>color_( C, true )</var> \cdot \left( <var>plus( D+X, E+Z )</var> \right)</code></p>
 						</div>
 						<p data-if="C % F === 0"><code><var>plus( A_TERM+X, B_TERM+Y )</var> = <var>plus( color_( D_TERM, true )+X, color_( E_TERM, true )+Z )</var></code></p>
-						<p data-else><code><var>plus( color_( A_TERM, true )+X, color_( B_TERM, true )+Y )</var> = <var>plus( color_( D_TERM, true )+X, color_( E_TERM, true )+Z )</var></code></p>
-
+						<p data-else><code><var>MATH.format(simplify(MATH.parse("#{" + A_TERM + "} " + X + " + #{" + B_TERM + "} " + Y + " = #{" + D_TERM + "} " + X + "#{" + E_TERM + "} " + Z, [BLUE, BLUE, BLUE, BLUE])), simplifyOptions.checkInput)</var></code></p>
 					</div>
 
 					<div>
